@@ -1,5 +1,6 @@
 package com.example.deepresearch.orchestration;
 
+import com.example.deepresearch.config.AgentFactory;
 import com.example.deepresearch.config.ModelConfig;
 import com.example.deepresearch.agents.UserClarifierAgent;
 import com.example.deepresearch.agents.BriefGeneratorAgent;
@@ -39,9 +40,11 @@ public final class DeepResearchOrchestrator {
     }
 
     private final ModelConfig modelConfig;
+    private final AgentFactory agentFactory;
 
     public DeepResearchOrchestrator(ModelConfig modelConfig) {
         this.modelConfig = modelConfig;
+        this.agentFactory = new AgentFactory(modelConfig);
     }
 
     public ResearchReport run(String query, Options options) {
@@ -50,7 +53,7 @@ public final class DeepResearchOrchestrator {
 
         // SCOPE
         logger.info("Phase 1: Scope - Clarifying user query and generating brief");
-        UserClarifierAgent clarifier = new UserClarifierAgent(modelConfig, options.interactive);
+        UserClarifierAgent clarifier = new UserClarifierAgent(agentFactory, options.interactive);
         var clarification = clarifier.clarify(query);
         logger.debug("Query clarified: {}", clarification.clarifiedGoal());
         logger.debug("Assumptions: {}", clarification.assumptions());
